@@ -27,7 +27,7 @@ class LoginViewController: UIViewController {
     
     @IBAction func tryLogin(sender: AnyObject) {
         
-        let email = emailField.text
+        let email = emailField.text 
         let password = passwordField.text
         
         if email != "" && password != "" {
