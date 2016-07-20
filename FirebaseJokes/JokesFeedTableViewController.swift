@@ -1,0 +1,72 @@
+//
+//  JokesFeedTableViewController.swift
+//  FirebaseJokes
+//
+//  Created by Matthew Maher on 1/23/16.
+//  Copyright © 2016 Matt Maher. All rights reserved.
+//
+
+import UIKit
+import Firebase
+import FirebaseDatabase
+
+class JokesFeedTableViewController: UITableViewController {
+    
+    var jokes = [Joke]()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        DataService.dataService.JOKE_REF.observeEventType(.Value) { (snapshot: FIRDataSnapshot) in
+            self.jokes = []
+            
+            if let snapshots = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                for snap in snapshots {
+                    if let postDictionary = snap.value as? Dictionary<String, AnyObject> {
+                        let key = snap.key
+                        let joke = Joke(key: key, dictionary: postDictionary)
+                        
+                        self.jokes.insert(joke, atIndex: 0)
+                    }
+                }
+            }
+            self.tableView.reloadData()
+        }
+        
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        
+    }
+    
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        
+        return 1
+    }
+    
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return jokes.count
+    }
+    
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        let joke = jokes[indexPath.row]
+        
+        if let cell = tableView.dequeueReusableCellWithIdentifier("JokeCellTableViewCell") as? JokeCellTableViewCell {
+            
+            // Send the single joke to configureCell() in JokeCellTableViewCell.
+            
+            cell.configureCell(joke)
+            
+            return cell
+            
+        } else {
+            
+            return JokeCellTableViewCell()
+            
+        }
+    }
+    
+}
